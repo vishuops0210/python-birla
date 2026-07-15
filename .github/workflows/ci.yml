@@ -49,7 +49,7 @@ jobs:
 
       # ── Security & Quality Gate (SAST) ──
       - name: SonarQube Scan
-        uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan@main
+        uses: ajitesh70/shared-repo/.github/actions/sonarqube-scan@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
@@ -74,22 +74,22 @@ jobs:
 
       # ── Docker Build & Push ──
       - name: Setup Docker Hub Login
-        uses: vishuops0210/shared-repo/.github/actions/docker-login@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-login@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Setup Docker Buildx
-        uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
+        uses: ajitesh70/shared-repo/.github/actions/setup-docker@adff178e72fb28515a895d99b111a5b43b485c26
 
       - name: Build Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-build@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-build@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
           image-tag: ${{ github.sha }}
 
       - name: Push Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-push@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-push@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
           image-tag: ${{ github.sha }}
