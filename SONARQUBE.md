@@ -63,14 +63,23 @@ Issues. The gate failed because none had been reviewed yet.
 | Debug Mode Enabled | Flask's debug mode left on, which can expose a code-execution console if reachable |
 | Hardcoded Credential | A password written directly into the source code instead of a secret |
 
-**Round 2 — bugs, code smells, duplication**: a mutable default argument, a
-pointless always-true comparison, a bare exception handler, an unused
-variable, a leftover TODO comment, and a copy-pasted function instead of a
-reused one. SonarQube reported this as 1 Bug, 6 Code Smells, and a
-duplication percentage well over the allowed threshold. It also caught one
-issue we didn't plant on purpose — a repeated string literal that only
-became a problem once our new code added a third use of it — confirming
-it's genuinely analyzing the code, not just matching what we expected.
+**Round 2 — bugs, code smells, duplication**. SonarQube reported this as
+1 Bug, 6 Code Smells, and a duplication percentage well over the allowed
+threshold.
+
+| Issue | In plain terms |
+|---|---|
+| Mutable Default Argument | A function's default value is a shared list, so leftover data quietly carries over between unrelated calls |
+| Always-True Comparison | A condition that compares a value to itself, so it's always true and does nothing useful |
+| Bare Exception Handler | Catches every possible error without saying which one, hiding real problems |
+| Unused Variable | A variable is created but never used anywhere |
+| Leftover TODO Comment | A comment marking unfinished work left in the code |
+| Copy-Pasted Function | An existing function duplicated instead of reused, so a fix in one place won't apply to the other |
+
+It also caught one issue we didn't plant on purpose — a repeated string
+literal that only became a problem once our new code added a third use of
+it — confirming it's genuinely analyzing the code, not just matching what
+we expected.
 
 In both rounds the gate failed as expected, and the build/push step never
 ran — proof the gate actually blocks non-compliant code from shipping, not
