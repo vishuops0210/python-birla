@@ -24,7 +24,7 @@ build to proceed.
 | **Security Hotspots** | Security-sensitive code that needs human review to confirm safe/unsafe (e.g. hardcoded secrets, weak crypto, debug flags) |
 | **Code Smells** | Maintainability issues (dead code, duplicated literals, overly complex functions, etc.) |
 | **Duplications** | Copy-pasted code instead of reused |
-| **Coverage** | How much of the new/changed code is exercised by tests |
+| **Coverage** | How much of the code is exercised by tests |
 
 Bugs/Vulnerabilities/Code Smells all fall under **Issues**; Security Hotspots
 are tracked separately and require manual triage (mark Safe/Fixed) in the
