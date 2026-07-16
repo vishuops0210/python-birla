@@ -51,10 +51,17 @@ To confirm the pipeline actually catches problems (not just a green rubber
 stamp), we deliberately committed known-bad code, clearly marked as
 intentional test code, and watched the gate react:
 
-**Round 1 — security issues**: SQL injection, OS command injection, weak
-password hashing, insecure random token generation, a hardcoded password,
-and debug mode left enabled. All of these landed as **Security Hotspots**,
-not Issues. The gate failed because none had been reviewed yet.
+**Round 1 — security issues**, all landed as **Security Hotspots**, not
+Issues. The gate failed because none had been reviewed yet.
+
+| Vulnerability | In plain terms |
+|---|---|
+| SQL Injection | User input pasted directly into a SQL query instead of using safe parameters |
+| OS Command Injection | User input passed straight into a shell command |
+| Weak Password Hashing | Passwords hashed with MD5, which is fast and easily cracked |
+| Insecure Random Token Generation | Session tokens generated with a predictable random function, not a secure one |
+| Debug Mode Enabled | Flask's debug mode left on, which can expose a code-execution console if reachable |
+| Hardcoded Credential | A password written directly into the source code instead of a secret |
 
 **Round 2 — bugs, code smells, duplication**: a mutable default argument, a
 pointless always-true comparison, a bare exception handler, an unused
