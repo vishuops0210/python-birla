@@ -54,7 +54,7 @@ jobs:
         uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan@main
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
+          sonar-host-url: 'https://sonar.tyagi.fun'
           sonar-project-key: 'bajaj-python'
           sonar-project-name: 'Bajaj Python App'
           sonar-sources: '.'
