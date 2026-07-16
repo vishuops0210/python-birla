@@ -33,6 +33,7 @@ jobs:
           python-version: '3.9'
           requirements-file: 'requirements-dev.txt'
 
+
       # ── Dependency Scanning (SCA) ──
       - name: Trivy FS Scan
         uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
