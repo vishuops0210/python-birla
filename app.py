@@ -146,6 +146,67 @@ def register_user():
     return jsonify(username=username, password_hash=password_hash, token=token), 201
 
 
+# SAST TEST: mutable default argument (Bug — python:S5717-style rule).
+# The `tags=[]` list is created once at function-definition time and shared
+# across every call that doesn't pass its own list, so tags silently
+# accumulate across unrelated requests.
+def add_tags(item_id, tags=[]):
+    tags.append(item_id)
+    return tags
+
+
+@app.route('/api/items/<int:item_id>/tag', methods=['POST'])
+def tag_item(item_id):
+    # TODO: replace this with a proper tagging table once schema is final (SAST TEST: S1135)
+    unused_flag = True  # SAST TEST: unused local variable (Code Smell, S1481)
+
+    # SAST TEST: identical expressions on both sides of an operator, always
+    # true and therefore pointless (Bug, S1764).
+    if item_id == item_id:
+        pass
+
+    try:
+        item = items[item_id]
+    except:  # SAST TEST: bare except clause swallows everything (Code Smell, S5754)
+        return jsonify(error="item not found"), 404
+
+    tags = add_tags(item_id)
+    return jsonify(item=item, tags=tags), 200
+
+
+@app.route('/api/calculate/v2', methods=['GET'])
+def calculate_v2():
+    # SAST TEST: duplicated code block (Duplication) — copy-pasted from
+    # calculate() instead of reusing it, should trip SonarQube's CPD check.
+    op = request.args.get('op')
+    a = request.args.get('a')
+    b = request.args.get('b')
+
+    if op is None or a is None or b is None:
+        return jsonify(error="op, a and b are required query params"), 400
+
+    try:
+        a = float(a)
+        b = float(b)
+    except ValueError:
+        return jsonify(error="a and b must be numbers"), 400
+
+    if op == 'add':
+        result = a + b
+    elif op == 'subtract':
+        result = a - b
+    elif op == 'multiply':
+        result = a * b
+    elif op == 'divide':
+        if b == 0:
+            return jsonify(error="division by zero"), 400
+        result = a / b
+    else:
+        return jsonify(error="op must be one of add, subtract, multiply, divide"), 400
+
+    return jsonify(op=op, a=a, b=b, result=result), 200
+
+
 if __name__ == '__main__':
     # Add a deliberate code smell for SonarQube to catch (hardcoded secret)
     SECRET_API_KEY = "12345-Super-Secret-Key"

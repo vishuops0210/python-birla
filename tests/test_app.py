@@ -113,3 +113,26 @@ def test_search_users_empty(client):
 # NOTE: /api/ping, /api/register, and the password/token helpers are
 # intentionally left untested here (see app.py "SAST TEST" comments) to
 # validate SonarQube's new-code coverage gate.
+
+
+def test_tag_item(client):
+    created = client.post('/api/items', json={"name": "widget"}).get_json()
+    resp = client.post(f"/api/items/{created['id']}/tag")
+    assert resp.status_code == 200
+    assert created['id'] in resp.get_json()['tags']
+
+
+# NOTE: tag_item's 404/bare-except branch is intentionally left untested too.
+
+
+@pytest.mark.parametrize(
+    "op,a,b,expected",
+    [
+        ("add", 2, 3, 5),
+        ("divide", 10, 2, 5),
+    ],
+)
+def test_calculate_v2_duplicate(client, op, a, b, expected):
+    resp = client.get(f'/api/calculate/v2?op={op}&a={a}&b={b}')
+    assert resp.status_code == 200
+    assert resp.get_json()['result'] == expected
