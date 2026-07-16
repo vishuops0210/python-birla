@@ -21,7 +21,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
       # ── Secret Scanning ──
       - name: Gitleaks Scan
         uses: vishuops0210/shared-repo/.github/actions/gitleaks-scan@main
