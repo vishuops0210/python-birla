@@ -4,50 +4,92 @@ on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
-  build-and-push:
-    name: Build and Push Python to Docker Hub
+  quality:
+    name: Unit Tests, Coverage & SonarQube SAST
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    
-    
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ── Security & Quality Gate ──
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+          cache-dependency-path: requirements-dev.txt
+
+      - name: Install Dependencies
+        run: pip install -r requirements-dev.txt
+
+      # ── Unit Tests & Coverage ──
+      - name: Run Unit Tests with Coverage
+        run: |
+          pytest --cov --cov-report=xml:coverage.xml --cov-report=term-missing \
+                 --junitxml=test-results.xml
+
+      - name: Upload Test & Coverage Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-and-coverage-reports
+          path: |
+            coverage.xml
+            test-results.xml
+          retention-days: 14
+
+      # ── Security & Quality Gate (SAST) ──
       - name: SonarQube Scan
-        uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan@main
+        uses: ajitesh70/shared-repo/.github/actions/sonarqube-scan@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host-url: ${{ secrets.SONAR_HOST_URL }}
           sonar-project-key: 'bajaj-python'
           sonar-project-name: 'Bajaj Python App'
           sonar-sources: '.'
-          sonar-exclusions: 'venv/**,__pycache__/**,tests/**'
+          sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
+
+  build-and-push:
+    name: Build and Push Python to Docker Hub
+    needs: quality
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # ── Docker Build & Push ──
       - name: Setup Docker Hub Login
-        uses: vishuops0210/shared-repo/.github/actions/docker-login@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-login@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Setup Docker Buildx
-        uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
+        uses: ajitesh70/shared-repo/.github/actions/setup-docker@adff178e72fb28515a895d99b111a5b43b485c26
 
       - name: Build Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-build@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-build@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
           image-tag: ${{ github.sha }}
 
       - name: Push Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-push@main
+        uses: ajitesh70/shared-repo/.github/actions/docker-push@adff178e72fb28515a895d99b111a5b43b485c26
         with:
           repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
           image-tag: ${{ github.sha }}
