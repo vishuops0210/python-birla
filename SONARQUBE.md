@@ -13,7 +13,7 @@ build to proceed.
   automatically, on every push/PR — before a human reviewer has to find them.
 - Enforces a hard gate: if the code doesn't meet the bar, the pipeline stops
   before the Docker image is ever built or pushed.
-- Turns "code review opinions" into consistent, automated, repeatable checks.
+- Checks every push the same way, every time — not dependent on a human noticing.
 
 ## What it scans for
 
