@@ -7,7 +7,7 @@ on:
   pull_request:
     branches:
       - main
-      
+
 
 jobs:
   secret-scan:
@@ -65,6 +65,7 @@ jobs:
           sonar-project-name: 'Bajaj-Python-App'
           sonar-sources: '.'
           sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
+
 
   trivy-fs-scan:
     name: SCA (Trivy FS)
