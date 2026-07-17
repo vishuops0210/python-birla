@@ -21,6 +21,7 @@ jobs:
         with:
           fetch-depth: 0
 
+
       - name: Gitleaks Scan
         uses: vishuops0210/shared-repo/.github/actions/gitleaks-scan@main
         with:
