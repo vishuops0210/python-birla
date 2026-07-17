@@ -16,6 +16,7 @@ jobs:
       sonar-project-key: 'bajaj-python'
       docker-repository: 'demo-python-app'
       docker-tag: ${{ github.sha }}
+      sonar-args: '-Dsonar.projectName="Bajaj Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
