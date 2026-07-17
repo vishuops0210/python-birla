@@ -89,6 +89,7 @@ def echo_payload():
     payload = request.get_json(silent=True)
     if not payload:
         return jsonify(error="Empty payload"), 400
+        
     
     # Adding some logic to create more lines of code for SonarQube to analyze
     response_message = f"You sent: {payload}"
