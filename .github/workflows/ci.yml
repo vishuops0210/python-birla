@@ -8,121 +8,16 @@ on:
     branches:
       - main
 
-
 jobs:
-  secret-scan:
-    name: Secret Scanning (Gitleaks)
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-
-      - name: Gitleaks Scan
-        uses: vishuops0210/shared-repo/.github/actions/gitleaks-scan@main
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-  unit-test:
-    name: Unit Tests & Coverage
-    needs: secret-scan
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Python Setup & Test
-        uses: vishuops0210/shared-repo/.github/actions/python-test@main
-        with:
-          python-version: '3.9'
-          requirements-file: 'requirements-dev.txt'
-
-  sonarqube-scan:
-    name: SAST (SonarQube)
-    needs: unit-test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: SonarQube Scan
-        uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan@main
-        with:
-          sonar-token: ${{ secrets.SONAR_TOKEN }}
-          sonar-host-url: 'https://sonar.tyagi.fun'
-          sonar-project-key: 'bajaj-python'
-          sonar-project-name: 'Bajaj-Python-App'
-          sonar-sources: '.'
-          sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
-
-
-  trivy-fs-scan:
-    name: SCA (Trivy FS)
-    needs: unit-test
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Trivy FS Scan
-        uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
-        with:
-          scan-type: 'fs'
-          exit-code: '0'
-
-  build-and-push:
-    name: Build and Push to Docker Hub
-    needs: [sonarqube-scan, trivy-fs-scan]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Setup Docker Hub Login
-        uses: vishuops0210/shared-repo/.github/actions/docker-login@main
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Setup Docker Buildx
-        uses: vishuops0210/shared-repo/.github/actions/setup-docker@main
-
-      - name: Build Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-build@main
-        with:
-          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
-          image-tag: ${{ github.sha }}
-
-      - name: Trivy Image Scan
-        uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
-        with:
-          scan-type: 'image'
-          image-ref: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app:${{ github.sha }}'
-          exit-code: '0'
-
-      - name: Push Docker Image
-        uses: vishuops0210/shared-repo/.github/actions/docker-push@main
-        with:
-          repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
-          image-tag: ${{ github.sha }}
+  ci-pipeline:
+    uses: vishuops0210/shared-repo/.github/workflows/python-ci.yml@main
+    with:
+      python-version: '3.9'
+      sonar-project-key: 'bajaj-python'
+      docker-repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
+      docker-tag: ${{ github.sha }}
+    secrets:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
