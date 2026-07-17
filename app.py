@@ -84,6 +84,17 @@ def delete_item(item_id):
     return jsonify(message="item deleted"), 200
 
 
+@app.route('/api/echo', methods=['POST'])
+def echo_payload():
+    payload = request.get_json(silent=True)
+    if not payload:
+        return jsonify(error="Empty payload"), 400
+    
+    # Adding some logic to create more lines of code for SonarQube to analyze
+    response_message = f"You sent: {payload}"
+    return jsonify(message=response_message, original_payload=payload), 200
+
+
 if __name__ == '__main__':
     # Add a deliberate code smell for SonarQube to catch (hardcoded secret)
     SECRET_API_KEY = "12345-Super-Secret-Key"
