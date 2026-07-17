@@ -11,6 +11,7 @@ jobs:
   ci-pipeline:
     uses: vishuops0210/shared-repo/.github/workflows/python-ci.yml@main
     with:
+    
       python-version: '3.9'
       sonar-project-key: 'bajaj-python'
       docker-repository: 'demo-python-app'
