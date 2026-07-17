@@ -8,6 +8,7 @@ on:
     branches:
       - main
 jobs:
+
   ci-pipeline:
     uses: vishuops0210/shared-repo/.github/workflows/python-ci.yml@main
     with:
