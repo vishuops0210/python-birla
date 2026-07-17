@@ -9,24 +9,33 @@ on:
       - main
 
 jobs:
-  quality:
-    name: Unit Tests, Coverage & SonarQube SAST
+  secret-scan:
+    name: Secret Scanning (Gitleaks)
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ── Secret Scanning ──
       - name: Gitleaks Scan
         uses: vishuops0210/shared-repo/.github/actions/gitleaks-scan@main
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-test:
+    name: Unit Tests & Coverage
+    needs: secret-scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Python Setup & Test
         uses: vishuops0210/shared-repo/.github/actions/python-test@main
@@ -34,14 +43,18 @@ jobs:
           python-version: '3.9'
           requirements-file: 'requirements-dev.txt'
 
-      # ── Dependency Scanning (SCA) ──
-      - name: Trivy FS Scan
-        uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
+  sonarqube-scan:
+    name: SAST (SonarQube)
+    needs: unit-test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
         with:
-          scan-type: 'fs'
-          exit-code: '0'
+          fetch-depth: 0
 
-      # ── Security & Quality Gate (SAST) ──
       - name: SonarQube Scan
         uses: vishuops0210/shared-repo/.github/actions/sonarqube-scan@main
         with:
@@ -52,22 +65,37 @@ jobs:
           sonar-sources: '.'
           sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
 
-          
-  build-and-push:
-    name: Build and Push Python to Docker Hub
-    needs: quality
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+  trivy-fs-scan:
+    name: SCA (Trivy FS)
+    needs: unit-test
     runs-on: ubuntu-latest
     permissions:
       contents: read
-
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # ── Docker Build & Push ──
+      - name: Trivy FS Scan
+        uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
+        with:
+          scan-type: 'fs'
+          exit-code: '0'
+
+  build-and-push:
+    name: Build and Push to Docker Hub
+    needs: [sonarqube-scan, trivy-fs-scan]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Setup Docker Hub Login
         uses: vishuops0210/shared-repo/.github/actions/docker-login@main
         with:
@@ -83,7 +111,6 @@ jobs:
           repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
           image-tag: ${{ github.sha }}
 
-      # ── Container Vulnerability Scanning ──
       - name: Trivy Image Scan
         uses: vishuops0210/shared-repo/.github/actions/trivy-scan@main
         with:
