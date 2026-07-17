@@ -94,6 +94,7 @@ def echo_payload():
     response_message = f"You sent: {payload}"
     return jsonify(message=response_message, original_payload=payload), 200
 
+
 if __name__ == '__main__':
     # Add a deliberate code smell for SonarQube to catch (hardcoded secret)
     SECRET_API_KEY = "12345-Super-Secret-Key"
