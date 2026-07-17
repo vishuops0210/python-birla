@@ -7,6 +7,7 @@ on:
   pull_request:
     branches:
       - main
+      
 
 jobs:
   secret-scan:
@@ -61,7 +62,7 @@ jobs:
           sonar-token: ${{ secrets.SONAR_TOKEN }}
           sonar-host-url: 'https://sonar.tyagi.fun'
           sonar-project-key: 'bajaj-python'
-          sonar-project-name: 'Bajaj Python App'
+          sonar-project-name: 'Bajaj-Python-App'
           sonar-sources: '.'
           sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
 
