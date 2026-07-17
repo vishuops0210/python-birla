@@ -14,7 +14,7 @@ jobs:
     with:
       python-version: '3.9'
       sonar-project-key: 'bajaj-python'
-      docker-repository: '${{ secrets.DOCKERHUB_USERNAME }}/demo-python-app'
+      docker-repository: 'demo-python-app'
       docker-tag: ${{ github.sha }}
     secrets:
       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
