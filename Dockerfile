@@ -17,4 +17,5 @@ COPY . .
 EXPOSE 5000
 
 # 6. Run the app
+
 CMD ["python3", "app.py"]
