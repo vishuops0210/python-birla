@@ -102,3 +102,15 @@ def test_delete_item(client):
 def test_delete_item_not_found(client):
     resp = client.delete('/api/items/999')
     assert resp.status_code == 404
+
+
+def test_echo_payload(client):
+    resp = client.post('/api/echo', json={"test": "data"})
+    assert resp.status_code == 200
+    assert "You sent" in resp.get_json()['message']
+
+
+def test_echo_payload_empty(client):
+    resp = client.post('/api/echo')
+    assert resp.status_code == 400
+    assert "Empty payload" in resp.get_json()['error']
