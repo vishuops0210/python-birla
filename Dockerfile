@@ -3,7 +3,7 @@ FROM ubuntu:22.04
 WORKDIR /app
 
 # 2. Install Python on the bare Ubuntu image
-RUN apt-get update && apt-get install -y python3 python3-venv
+RUN apt-get update && apt-get install -y python3 python3-venv && rm -rf /var/lib/apt/lists/*
 
 # 3. Copy the pre-installed dependencies we downloaded from the artifact!
 COPY .venv/ /app/.venv/
