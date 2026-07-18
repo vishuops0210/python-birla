@@ -10,7 +10,7 @@ on:
 jobs:
 
   ci-pipeline:
-    uses: vishuops0210/shared-repo/.github/workflows/ajitesh-python.yml@main
+    uses: vishuops0210/shared-repo/.github/workflows/python-ci.yml@main
     with:
     
       python-version: '3.9'
