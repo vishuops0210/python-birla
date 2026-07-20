@@ -13,6 +13,7 @@ def home():
     </html>
     '''
 
+
 @app.route('/api/status')
 def status():
     return jsonify({"status": "success", "message": "API is running flawlessly."})
