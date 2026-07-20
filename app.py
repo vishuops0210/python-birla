@@ -51,6 +51,7 @@ def manage_items():
         if 'name' not in data:
             return jsonify({"error": "missing name"}), 400
         
+        
         item_id = _next_id
         _next_id += 1
         items[item_id] = {"id": item_id, "name": data['name']}
