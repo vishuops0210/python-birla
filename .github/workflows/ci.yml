@@ -21,3 +21,4 @@ jobs:
       sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
       sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
     secrets: inherit
+    
