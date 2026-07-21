@@ -20,7 +20,4 @@ jobs:
       max-image-size-mb: '500'
       sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
       sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
-    secrets:
-      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    secrets: inherit
