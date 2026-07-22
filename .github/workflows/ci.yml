@@ -22,7 +22,7 @@ jobs:
       sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
       enable-gitleaks: false
       enable-sonarqube: true
-      enable-unit-tests: false
+      enable-unit-tests: true
       gitleaks-fetch-depth: '20'
       install-command: |
         if [ ! -d ".venv" ]; then python -m venv .venv; fi
