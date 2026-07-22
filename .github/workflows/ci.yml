@@ -20,5 +20,15 @@ jobs:
       max-image-size-mb: '500'
       sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
       sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
+      gitleaks-fetch-depth: '20'
+      install-command: |
+        if [ ! -d ".venv" ]; then python -m venv .venv; fi
+        source .venv/bin/activate
+        python -m pip install --upgrade pip
+        pip install pytest pytest-cov
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        if [ -f requirements-dev.txt ]; then pip install -r requirements-dev.txt; fi
+      test-command: |
+        source .venv/bin/activate
+        pytest --cov --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=test-results.xml
     secrets: inherit
-    
