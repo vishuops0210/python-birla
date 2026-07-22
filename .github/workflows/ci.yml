@@ -13,17 +13,15 @@ jobs:
   python-ci:
     uses: vishuops0210/shared-repo/.github/workflows/ci-python.yml@main
     with:
+      # --- CORE SETTINGS ---
       python-version: '3.9'
-      sonar-project-key: 'bajaj-demo-python'
-      docker-repository: 'demo-python-app'
-      docker-tag: ${{ github.sha }}
-      max-image-size-mb: '500'
-      sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
-      sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
+
+      # --- GITLEAKS (SECRET SCAN) ---
       enable-gitleaks: false
-      enable-sonarqube: true
-      enable-unit-tests: true
       gitleaks-fetch-depth: '20'
+
+      # --- UNIT TESTS ---
+      enable-unit-tests: true
       install-command: |
         if [ ! -d ".venv" ]; then python -m venv .venv; fi
         source .venv/bin/activate
@@ -34,4 +32,17 @@ jobs:
       test-command: |
         source .venv/bin/activate
         pytest --cov --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=test-results.xml
+
+      # --- SONARQUBE (SAST) ---
+      enable-sonarqube: true
+      sonar-project-key: 'bajaj-demo-python'
+      sonar-exclusions: 'venv/**,__pycache__/**,tests/**,.github/**'
+      sonar-args: '-Dsonar.projectName="Bajaj Demo Python App" -Dsonar.tests=tests -Dsonar.python.coverage.reportPaths=coverage.xml -Dsonar.python.xunit.reportPath=test-results.xml -Dsonar.sourceEncoding=UTF-8'
+
+      # --- DOCKER BUILD & PUSH ---
+      enable-docker-build: true
+      enable-image-size-check: true
+      docker-repository: 'demo-python-app'
+      docker-tag: ${{ github.sha }}
+      max-image-size-mb: '500'
     secrets: inherit
