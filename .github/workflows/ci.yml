@@ -17,8 +17,8 @@ jobs:
       python-version: '3.9'
 
       # --- GITLEAKS (SECRET SCAN) ---
-      enable-gitleaks: false
-      gitleaks-fetch-depth: '20'
+      enable-gitleaks: true
+      gitleaks-fetch-depth: '10'
 
       # --- UNIT TESTS ---
       enable-unit-tests: true
@@ -32,6 +32,7 @@ jobs:
       test-command: |
         source .venv/bin/activate
         pytest --cov --cov-report=xml:coverage.xml --cov-report=term-missing --junitxml=test-results.xml
+
 
       # --- SONARQUBE (SAST) ---
       enable-sonarqube: true
